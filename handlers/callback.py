@@ -62,9 +62,26 @@ async def admin_user_call(call: types.CallbackQuery):
     await call.message.reply(text=data, parse_mode=types.ParseMode.MARKDOWN)
 
 
+async def my_profile_call(call: types.CallbackQuery):
+    user_form = Database().sql_select_user_form_by_telegram_id_command(
+        telegram_id=call.from_user.id)
+    print(user_form)
+    with open(user_form[0]["photo"], 'rb') as photo:
+        await bot.send_photo(
+            chat_id=call.message.chat.id,
+            photo=photo,
+            caption=f"*Nickname:* {user_form[0]['nickname']}\n"
+                    f"*Age:* {user_form[0]['age']}\n"
+                    f"*Bio:* {user_form[0]['bio']}\n"
+                    f"*Married:* {user_form[0]['married']}\n",
+            parse_mode=types.ParseMode.MARKDOWN
+        )
+
+
 def register_callback_handlers(dp: Dispatcher):
     dp.register_message_handler(quiz_1, commands=['quiz'])
     dp.register_callback_query_handler(quiz_2, lambda call: call.data == "button_call_1")
     dp.register_callback_query_handler(answer_male, lambda call: call.data == "answer_male")
     dp.register_callback_query_handler(answer_female, lambda call: call.data == "answer_female")
     dp.register_callback_query_handler(admin_user_call, lambda call: call.data == "admin_user_list")
+    dp.register_callback_query_handler(my_profile_call, lambda call: call.data == "my_profile")
