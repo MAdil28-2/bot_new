@@ -3,7 +3,7 @@ from aiogram import types, Dispatcher
 
 from const import START_MENU_TEXT
 from database import sql_commands
-from keyboards.start_kb import admin_select_users_keyboard, start_keyboard
+from keyboards.start_kb import admin_select_users_keyboard, start_keyboard, new_start_keyboard
 
 
 async def start_button(message: types.Message):
@@ -33,7 +33,7 @@ async def start_button(message: types.Message):
                 user=message.from_user.username
             ),
             parse_mode=types.ParseMode.MARKDOWN,
-            reply_markup=await start_keyboard()
+            reply_markup=await new_start_keyboard()
         )
 
 

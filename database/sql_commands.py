@@ -13,6 +13,7 @@ class Database:
 
         self.connection.execute(sql_queries.CREATE_USER_TABLE_QUERY)
         self.connection.execute(sql_queries.CREATE_USER_FORM_TABLE_QUERY)
+        self.connection.execute(sql_queries.CREATE_LIKE_FORM_TABLE_QUERY)
         self.connection.commit()
 
     def sql_insert_user_command(self, telegram_id, username,
@@ -62,3 +63,53 @@ class Database:
         return self.cursor.execute(
             sql_queries.SELECT_USER_FORM_BY_TELEGRAM_ID_QUERY, (telegram_id,)
         ).fetchall()
+
+    def sql_select_user_forms_command(self):
+        self.cursor.row_factory = lambda cursor, row: {
+            "id": row[0],
+            "telegram_id": row[1],
+            "nickname": row[2],
+            "age": row[3],
+            "bio": row[4],
+            "married": row[5],
+            "photo": row[6]
+        }
+        return self.cursor.execute(
+            sql_queries.SELECT_USER_FORM_QUERY
+        ).fetchall()
+
+    def sql_insert_like_form_command(self, owner_telegram_id, liker_telegram_id):
+        self.cursor.execute(sql_queries.INSERT_LIKE_FORM_QUERY,
+                            (None,
+                             owner_telegram_id,
+                             liker_telegram_id,)
+                            )
+        self.connection.commit()
+
+    def sql_select_liked_form_command(self, owner_telegram_id, liker_telegram_id):
+        self.cursor.row_factory = lambda cursor, row: {
+            "id": row[0],
+            "owner_telegram_id": row[1],
+            "liker_telegram_id": row[2],
+        }
+        return self.cursor.execute(
+            sql_queries.SELECT_LIKE_FORM_QUERY,
+            (owner_telegram_id, liker_telegram_id,)
+        ).fetchall()
+
+    def sql_update_user_form_command(self, nickname, age, bio, married, photo, telegram_id):
+        self.cursor.execute(sql_queries.UPDATE_USER_FORM_QUERY,
+                            (nickname,
+                             age,
+                             bio,
+                             married,
+                             photo,
+                             telegram_id,)
+                            )
+        self.connection.commit()
+
+    def sql_delete_user_form(self, telegram_id):
+        self.cursor.execute(sql_queries.DELETE_USER_FORM_QUERY,
+                            (telegram_id,)
+                            )
+        self.connection.commit()
